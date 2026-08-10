@@ -1,4 +1,4 @@
-package com.example.chalo
+package com.example.chalo.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
