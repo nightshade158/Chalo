@@ -6,10 +6,13 @@ import androidx.room.RoomDatabase
 import com.example.chalo.data.local.CartDao
 import com.example.chalo.data.local.ChaloDatabase
 import com.example.chalo.data.local.ListingDao
+import com.example.chalo.data.local.OrderDao
 import com.example.chalo.data.repository.CartRepositoryImpl
 import com.example.chalo.data.repository.ListingRepositoryImpl
+import com.example.chalo.data.repository.OrderRepositoryImpl
 import com.example.chalo.domain.repository.CartRepository
 import com.example.chalo.domain.repository.ListingRepository
+import com.example.chalo.domain.repository.OrderRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,5 +52,16 @@ object AppModule {
     @Singleton
     fun provideCartRepository(dao: CartDao): CartRepository{
         return CartRepositoryImpl(dao)
+    }
+
+    @Provides
+    fun provideOrderDao(database: ChaloDatabase): OrderDao{
+        return database.orderDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOrderRepository(dao: OrderDao): OrderRepository{
+        return OrderRepositoryImpl(dao)
     }
 }

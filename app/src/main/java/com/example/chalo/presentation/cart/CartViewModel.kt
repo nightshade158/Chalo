@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chalo.domain.model.CartItem
 import com.example.chalo.domain.repository.CartRepository
+import com.example.chalo.domain.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val repository: CartRepository
+    private val repository: CartRepository,
+    private val orderRepository: OrderRepository
 ) : ViewModel() {
 
     val cartItems: StateFlow<List<CartItem>> = repository.getCartItems()
@@ -31,6 +33,11 @@ class CartViewModel @Inject constructor(
     fun addToCart(listingId: Int, title: String, price: Double) {
         viewModelScope.launch {
             repository.addToCart(listingId, title, price)
+        }
+    }
+    fun checkout(date: String, time: String){
+        viewModelScope.launch {
+            orderRepository.checkout(cartItems.value, date, time)
         }
     }
 }
