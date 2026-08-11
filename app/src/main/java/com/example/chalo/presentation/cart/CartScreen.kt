@@ -8,6 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CartScreen(
@@ -16,6 +21,19 @@ fun CartScreen(
     val cartItems by viewModel.cartItems.collectAsState()
     var showCheckoutDialog by remember { mutableStateOf(false) }
     var showSuccessMessage by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    var pendingDate by remember { mutableStateOf("") }
+    var pendingTime by remember { mutableStateOf("") }
+
+    val paymentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.checkout(pendingDate, pendingTime)
+            showSuccessMessage = true
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -63,10 +81,18 @@ fun CartScreen(
         CheckoutDialog(
             onDismiss = { showCheckoutDialog = false },
             onConfirm = { date, time ->
-                viewModel.checkout(date, time)
+                pendingDate = date
+                pendingTime = time
                 showCheckoutDialog = false
-                showSuccessMessage = true
+
+                val totalAmount = cartItems.sumOf { it.price * it.quantity }
+                val amountInPaise = (totalAmount * 100).toInt()
+
+                val intent = Intent(context, com.example.chalo.presentation.cart.PaymentActivity::class.java)
+                intent.putExtra("amount", amountInPaise)
+                paymentLauncher.launch(intent)
             }
         )
     }
+
 }
