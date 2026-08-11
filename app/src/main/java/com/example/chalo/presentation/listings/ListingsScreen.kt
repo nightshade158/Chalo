@@ -11,7 +11,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ListingsScreen(
-    viewModel: ListingsViewModel = hiltViewModel()
+    viewModel: ListingsViewModel = hiltViewModel(),
+    onListingClick: (Int) -> Unit
 ) {
     val listings by viewModel.listings.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -33,7 +34,8 @@ fun ListingsScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
+                    onClick = {onListingClick(listing.id)}
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(listing.title, style = MaterialTheme.typography.titleMedium)
