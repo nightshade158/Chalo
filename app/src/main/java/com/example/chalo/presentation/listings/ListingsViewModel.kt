@@ -2,13 +2,14 @@ package com.example.chalo.presentation.listings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.chalo.domain.model.Listing
 import com.example.chalo.domain.repository.ListingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +25,9 @@ class ListingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    val pagedListings: Flow<PagingData<Listing>> = repository.getListingsPaged()
+        .cachedIn(viewModelScope)
 
     fun addListing(title: String, description: String, price: Double, category: String){
         viewModelScope.launch {
